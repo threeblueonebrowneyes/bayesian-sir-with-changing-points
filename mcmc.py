@@ -13,7 +13,7 @@ def add(delta, T):
 
 def delete(delta, T):
     _delta = delta.copy()
-    candidate_idx = np.arange(1,100)[delta[1:] == 1]
+    candidate_idx = np.arange(1,T)[delta[1:] == 1]
     index = np.random.choice(candidate_idx)
     _delta[index] = 0
     return _delta
