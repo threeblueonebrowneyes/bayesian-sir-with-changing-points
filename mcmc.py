@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import gamma as gamma_func
 from utils import *
@@ -13,7 +12,7 @@ def add(delta, T):
 
 def delete(delta, T):
     _delta = delta.copy()
-    candidate_idx = np.arange(1,T)[delta[1:] == 1]
+    candidate_idx = np.arange(1,T)[_delta[1:] == 1]
     index = np.random.choice(candidate_idx)
     _delta[index] = 0
     return _delta
@@ -48,7 +47,6 @@ def propose_delta(delta, T):
         p_list = [add, delete, swap]
         delta_ = p_list[_idx](delta_orig, T)
         
-
     return delta_.copy()
 
 
@@ -56,9 +54,9 @@ def log_j_ratio(sum_candidate, sum_original, T):
     if sum_original == sum_candidate:
         return 0  # np.log(1)
     elif (sum_candidate, sum_original) == (1, 2) or (sum_candidate, sum_original) == (T, T-1):
-        return np.log(3/(T-1))
+        return np.log(3./(T-1))
     elif (sum_candidate, sum_original) == (2, 1) or (sum_candidate, sum_original) == (T-1, T):
-        return np.log((T-1)/3)
+        return np.log((T-1)/3.)
     elif sum_candidate == (sum_original-1):
         return np.log((sum_original-1)/(T-sum_candidate))
     else:
@@ -112,7 +110,7 @@ def update_b(delta, beta):
     for k in range(1, K + 1):
         b[k - 1] = np.random.gamma(
             shape=0.1 + np.sum(eta == k),
-            scale=1.0 / (0.1 + np.sum(beta[eta == k])),
+            scale= 1.0 / (0.1 + np.sum(beta[eta == k])),
         )
 
     return b[eta - 1]
@@ -125,7 +123,7 @@ def update_r(delta, gamma):
     for k in range(1, K + 1):
         r[k - 1] = np.random.gamma(
             shape=0.1 + np.sum(eta == k),
-            scale=1.0 / (0.1 - np.sum(safe_log(gamma[eta == k]))),
+            scale= 1.0 / (0.1 - np.sum(safe_log(gamma[eta == k]))),
         )
 
     return r[eta - 1]
