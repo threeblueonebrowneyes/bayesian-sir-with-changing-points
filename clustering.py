@@ -65,7 +65,7 @@ def clustering(delta_hat, eta_hat, q, T, continue_add, continue_swap):
             else:
                 continue_swap = False
 
-        if iteration > 1000:
+        if iteration > 100000:
 
             continue_add = False
             continue_swap = False
