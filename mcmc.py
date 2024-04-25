@@ -147,6 +147,7 @@ def update_beta(b, T, S_0, P_0, S, P, delta_I):
     return _beta
 
 
+
 def update_gamma(r, T, I_0, I, delta_R):
     _gamma = np.zeros(T)
     for t in range(T):
