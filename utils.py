@@ -24,7 +24,7 @@ def plot_population_data(S, R, I, gt_changing_points, population_unit = 1e6):
             i += 1
         else:
             plt.axvline(x=c_point-1, color="black", linestyle="--", alpha=0.5)       
-    plt.xlim(0,100)
+    plt.xlim(0,len(S))
     plt.xlabel("Time [days]")
     plt.ylabel("Population [Milions of people]")
     plt.legend()
@@ -37,3 +37,19 @@ def safe_log(x):
     output[mask] = np.log(x[mask])
     output[~mask] = -10_000
     return output
+
+def constraint_lhs(deltas, tau_l, tau_u):
+    n_samples = deltas.shape[0]
+    sum_tau = np.sum(deltas[:, tau_l:tau_u]) / n_samples
+    return sum_tau
+
+def possible_taus(tau_k, delta_tau, T):
+    lower= tau_k
+    upper= tau_k +delta_tau
+    possible=[]
+    for i in range(delta_tau+1):
+        if upper<=T and lower>=0:
+            possible.append((lower, upper))
+            lower-=1
+            upper-=1
+    return possible
