@@ -2,9 +2,34 @@ import numpy as np
 
 
 def loss(eta, q):
+    """
+    Calculates the loss between two arrays.
+
+    Parameters:
+    eta (ndarray): The first array.
+    q (ndarray): The second array.
+
+    Returns:
+    float: The loss between the two arrays.
+    """
     return np.sum(np.abs((eta == eta[:, None]).astype(int) - q))
 
 def clustering(delta_hat, eta_hat, q, T, continue_add, continue_swap):
+    """
+    Perform clustering algorithm to optimize delta_hat.
+
+    Args:
+        delta_hat (numpy.ndarray): Array of length T representing the initial delta values.
+        eta_hat (numpy.ndarray): Array of length T representing the initial eta values.
+        q (float): Target value for clustering.
+        T (int): Number of elements in delta_hat.
+        continue_add (bool): Flag indicating whether to continue adding elements.
+        continue_swap (bool): Flag indicating whether to continue swapping elements.
+
+    Returns:
+        numpy.ndarray: Array of length T representing the optimized delta values.
+    """
+
     iteration = 0
     current_loss = loss(eta_hat, q)
 

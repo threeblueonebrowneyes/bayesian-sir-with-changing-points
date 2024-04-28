@@ -3,6 +3,17 @@ from scipy.special import gamma as gamma_func
 from utils import *
 
 def add(delta, T):
+    """
+    Adds a new element to the `delta` array by randomly selecting an index from the candidates where `delta` is 0,
+    and setting the value at that index to 1.
+
+    Parameters:
+    delta (numpy.ndarray): The input array.
+    T (int): The length of the array.
+
+    Returns:
+    numpy.ndarray: The updated `delta` array with a new element added.
+    """
     _delta = delta.copy()
     candidate_idx = np.arange(T)[(_delta == 0)]
     index = np.random.choice(candidate_idx)
@@ -11,14 +22,34 @@ def add(delta, T):
 
 
 def delete(delta, T):
+    """
+    Deletes a random element from the given array 'delta' by setting its value to 0.
+
+    Parameters:
+    delta (numpy.ndarray): The input array from which an element will be deleted.
+    T (int): The length of the array 'delta'.
+
+    Returns:
+    numpy.ndarray: The modified array 'delta' with a random element set to 0.
+    """
     _delta = delta.copy()
-    candidate_idx = np.arange(1,T)[_delta[1:] == 1]
+    candidate_idx = np.arange(1, T)[_delta[1:] == 1]
     index = np.random.choice(candidate_idx)
     _delta[index] = 0
     return _delta
 
 
 def swap(delta, T):
+    """
+    Swaps two consecutive elements in the `delta` array.
+
+    Parameters:
+    delta (numpy.ndarray): The input array of binary values.
+    T (int): The length of the `delta` array.
+
+    Returns:
+    numpy.ndarray: The modified `delta` array with two consecutive elements swapped.
+    """
     _delta = delta.copy()  
     candidate_idx = np.arange(1,T-1)[_delta[1: T - 1] - _delta[2:T] != 0]
     index = np.random.choice(candidate_idx)
@@ -29,6 +60,16 @@ def swap(delta, T):
 
 
 def propose_delta(delta, T):
+    """
+    Proposes a new delta based on the current delta and a given threshold T.
+    
+    Parameters:
+        delta (numpy.ndarray): The current delta array.
+        T (int): The threshold value.
+        
+    Returns:
+        numpy.ndarray: The proposed delta array.
+    """
     
     delta_orig = delta.copy()
     _K = np.sum(delta_orig)
@@ -51,6 +92,17 @@ def propose_delta(delta, T):
 
 
 def log_j_ratio(sum_candidate, sum_original, T):
+    """
+    Calculates the logarithm of the ratio of the transition probabilities for a Metropolis-Hastings algorithm.
+
+    Parameters:
+    sum_candidate (int): The sum of the candidate values.
+    sum_original (int): The sum of the original values.
+    T (int): The total number of values.
+
+    Returns:
+    float: The logarithm of the ratio of the transition probabilities.
+    """
     if sum_original == sum_candidate:
         return 0  # np.log(1)
     elif (sum_candidate, sum_original) == (1, 2) or (sum_candidate, sum_original) == (T, T-1):
@@ -63,6 +115,17 @@ def log_j_ratio(sum_candidate, sum_original, T):
         return np.log((T-sum_original)/(sum_candidate-1))
     
 def log_likelihood(delta, beta, gamma):
+    """
+    Calculate the log-likelihood of the Bayesian SIR model.
+
+    Parameters:
+    delta (numpy.ndarray): Array of observed values.
+    beta (numpy.ndarray): Array of beta values.
+    gamma (numpy.ndarray): Array of gamma values.
+
+    Returns:
+    float: The log-likelihood value.
+    """
     _delta = delta.copy()
     eta = np.cumsum(_delta)
     K = np.sum(_delta, dtype=int)
@@ -81,7 +144,21 @@ def log_likelihood(delta, beta, gamma):
     return total
 
 def accept_delta(delta_original, delta_candidate, beta, gamma, T, p):
-    
+    """
+    Accepts or rejects a candidate delta based on the Metropolis-Hastings algorithm.
+
+    Parameters:
+    - delta_original (numpy.ndarray): The original delta array.
+    - delta_candidate (numpy.ndarray): The candidate delta array.
+    - beta (float): The beta parameter.
+    - gamma (float): The gamma parameter.
+    - T (int): The total number of time steps.
+    - p (float): The probability of accepting the candidate delta.
+
+    Returns:
+    - numpy.ndarray: The accepted delta array.
+    """
+
     exponent = np.sum(delta_candidate - delta_original)
     prior_ratio = exponent * np.log(p / (1 - p))
     
@@ -104,6 +181,16 @@ def accept_delta(delta_original, delta_candidate, beta, gamma, T, p):
         return delta_original
     
 def update_b(delta, beta):
+    """
+    Update the values of b based on the given delta and beta arrays.
+
+    Parameters:
+    delta (numpy.ndarray): An array containing the delta values.
+    beta (numpy.ndarray): An array containing the beta values.
+
+    Returns:
+    numpy.ndarray: An array containing the updated values of b.
+    """
     K = np.sum(delta)
     b = np.zeros(K)
     eta = np.cumsum(delta)
@@ -117,6 +204,16 @@ def update_b(delta, beta):
 
 
 def update_r(delta, gamma):
+    """
+    Update the values of r based on the given delta and gamma.
+
+    Parameters:
+    delta (numpy.ndarray): An array of delta values.
+    gamma (numpy.ndarray): An array of gamma values.
+
+    Returns:
+    numpy.ndarray: An array of updated r values.
+    """
     K = np.sum(delta)
     r = np.zeros(K)
     eta = np.cumsum(delta)
@@ -129,6 +226,21 @@ def update_r(delta, gamma):
     return r[eta - 1]
 
 def update_beta(b, T, S_0, P_0, S, P, delta_I):
+    """
+    Update the beta values for each time step in the Bayesian SIR model.
+
+    Parameters:
+    - b (array-like): Array of beta values for each time step.
+    - T (int): Total number of time steps.
+    - S_0 (float): Initial susceptible population.
+    - P_0 (float): Initial total population.
+    - S (array-like): Array of susceptible population values for each time step.
+    - P (array-like): Array of total population values for each time step.
+    - delta_I (array-like): Array of new infected cases for each time step.
+
+    Returns:
+    - _beta (array-like): Array of updated beta values for each time step.
+    """
     _beta = np.zeros(T)
     for t in range(T):
         if t != 0:
@@ -149,9 +261,22 @@ def update_beta(b, T, S_0, P_0, S, P, delta_I):
 
 
 def update_gamma(r, T, I_0, I, delta_R):
+    """
+    Update the gamma values for each time step in the Bayesian SIR model.
+
+    Parameters:
+    - r: array-like, the recovery rate at each time step
+    - T: int, the total number of time steps
+    - I_0: int, the initial number of infected individuals
+    - I: array-like, the number of infected individuals at each time step
+    - delta_R: array-like, the number of newly recovered individuals at each time step
+
+    Returns:
+    - _gamma: array-like, the updated gamma values for each time step
+    """
     _gamma = np.zeros(T)
     for t in range(T):
-        if t!=0:
+        if t != 0:
             _gamma[t] = np.random.beta(
                 a=delta_R[t] + r[t],
                 b=1 + I[t-1] - delta_R[t],
@@ -161,6 +286,5 @@ def update_gamma(r, T, I_0, I, delta_R):
                 a=delta_R[t] + r[t],
                 b=1 + I_0 - delta_R[t],
             )
-
 
     return _gamma
