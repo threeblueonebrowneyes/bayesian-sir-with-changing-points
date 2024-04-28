@@ -233,9 +233,9 @@ def update_beta(b, T, S_0, P_0, S, P, delta_I):
     - b (array-like): Array of beta values for each time step.
     - T (int): Total number of time steps.
     - S_0 (float): Initial susceptible population.
-    - P_0 (float): Initial total population.
+    - P_0 (float): Initial fraction of infected population.
     - S (array-like): Array of susceptible population values for each time step.
-    - P (array-like): Array of total population values for each time step.
+    - P (array-like): Array of fraction of infected population values for each time step.
     - delta_I (array-like): Array of new infected cases for each time step.
 
     Returns:
